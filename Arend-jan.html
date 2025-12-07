@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>'t Boekesoundje</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- STIJL GEBASEERD OP FOTO ACHTERGROND (Donker & Elegant) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* NIEUW: Achtergrondafbeelding met overlay */
+            background-image: url('https://od.lk/s/MjJfMzUyMTgyNTJf/arend-jan.jpg');
+            background-size: cover;
+            /* Standaard (Desktop): De achtergrond 25% van links en 50% van boven positioneren */
+            background-position: 25% 50%; 
+            background-attachment: fixed; /* Zorgt ervoor dat de foto stilstaat tijdens scrollen */
+            min-height: 100vh;
+            position: relative; 
+        }
+        
+        /* RESPONSIVITEIT: Optimaliseer de achtergrondpositie voor mobiel */
+        @media (max-width: 640px) {
+            body {
+                /* Op mobiel verschuiven we de afbeelding iets naar rechts om het gezicht te centreren in de smalle viewport */
+                background-position: 35% 50%; 
+            }
+        }
+
+        /* Overlay voor leesbaarheid */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Donkerblauwe/zwarte overlay */
+            background: rgba(0, 0, 0, 0.7); 
+            z-index: -1;
+        }
+        
+        .sound-card {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            /* Donkere, semi-transparante knoppen die bij de achtergrond passen */
+            background-color: rgba(31, 41, 55, 0.7); /* Tailwind gray-800 met 70% opacity */
+            backdrop-filter: blur(5px); /* Een subtiel blur-effect */
+        }
+
+        .sound-card:hover {
+            /* Meer uitgesproken hover-effect */
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.6); 
+        }
+
+        .sound-card:active {
+            transform: translateY(0px);
+        }
+
+        .playing {
+            /* Elegante goud/amber kleur voor 'speelt' status */
+            border-color: #f59e0b !important; /* Amber-500 */
+            background-color: rgba(55, 65, 81, 0.9) !important; /* Gray-700 met hogere opaciteit */
+            color: white !important;
+            /* Goudkleurige gloed */
+            box-shadow: 0 0 20px rgba(253, 230, 138, 0.8); 
+        }
+
+        .playing i {
+            /* Sterkere pulsatie */
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Wave animation for playing state */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.2s;
+        }
+        
+        .playing .wave {
+            animation: rise 2s infinite linear;
+        }
+
+        /* Custom scrollbar aanpassen aan het donkere thema */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* Donkergrijs */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b; /* Amber */
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <!-- Accentkleur Amber-500 -->
+            <div class="inline-block p-4 rounded-full bg-gray-700 shadow-lg mb-4 border-2 border-amber-500">
+                <i class="fas fa-microphone-alt text-4xl text-amber-300"></i>
+            </div>
+            <!-- Titel is nu 't Boekesoundje -->
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-white drop-shadow-md">
+                't Boekesoundje
+            </h1>
+            <!-- AANGEPAST: Subtitel gewijzigd naar 'Het geluid van een groots denker' -->
+            <p class="text-gray-300 text-lg italic">
+                Het geluid van een groots denker
+            </p>
+        </div>
+
+        <!-- Audio container (hidden) - ongewijzigd -->
+        <div id="audioContainer" class="hidden">
+            <!-- Basisfragmenten (audio-0 t/m audio-9) -->
+            <audio id="audio-0" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTNf/De%20kern%20van%20de%20democratie.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-1" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTdf/Een%20democraat.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-2" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MThf/Theater%20tour.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-3" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTlf/Empatische%20man.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-4" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjBf/Transactioneel.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-5" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjFf/Tot%20morgen.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-6" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjJf/Dag.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-7" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjNf/Let%27s%20pray%20voor%20Moldavie.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-8" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjRf/Heel%20benieuwd.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-9" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MjVf/Holle%20retoriek.mp3" type="audio/mpeg">
+            </audio>
+            
+            <!-- Fragment 17 (NIEUW): Dat vind ik dus erg -->
+            <audio id="audio-16" preload="auto">
+                <source src="https://od.lk/s/MjJfMzUyMTU3NjJf/Dat%20vind%20ik%20dus%20erg.mp3" type="audio/mpeg">
+            </audio>
+
+            <!-- Oorspronkelijke fragmenten (nu met andere positie in de soundData array) -->
+            <audio id="audio-10" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTRf/Hugo%20rijtsma3.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-11" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTVf/Jonge%20man.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-12" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ2MTZf/Werken%20voor%20je%20zetel.mp3" type="audio/mpeg">
+            </audio>
+
+            <!-- Hugo Rijtsma fragmenten -->
+            <audio id="audio-13" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ4NzJf/Hugo%20rijtsma.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-14" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ4NzFf/Hugo%20rijtsma2.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="audio-15" preload="auto">
+                <source src="https://od.lk/d/MjJfMzUyMTQ4NzBf/Hugo%20rijtsma4.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex justify-center mb-8">
+            <button onclick="stopAllSounds()" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-6 rounded-full shadow-lg transition flex items-center gap-2">
+                <i class="fas fa-stop"></i> Stop Alles
+            </button>
+        </div>
+
+        <!-- Grid -->
+        <!-- AANGEPAST: grid-cols-1 is vervangen door grid-cols-2 om knoppen naast elkaar te tonen op mobiel -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="soundGrid">
+            <!-- Buttons generated by JS -->
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center text-gray-400 text-sm">
+            <p>Klik op een tegel om het fragment af te spelen.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mapping van de knopdata, herschikt en uitgebreid met het nieuwe fragment
+        const soundData = [
+            // Groep 1: De Algemene Fragmenten (1-10)
+            { title: "De kern van de democratie", audioId: "audio-0", icon: "fa-question", color: "border-yellow-400" }, 
+            { title: "Een Democraat", audioId: "audio-1", icon: "fa-landmark", color: "border-blue-400" },
+            { title: "Theater Tour", audioId: "audio-2", icon: "fa-masks-theater", color: "border-purple-400" },
+            { title: "Empatische Man", audioId: "audio-3", icon: "fa-heart", color: "border-pink-400" },
+            { title: "Transactioneel", audioId: "audio-4", icon: "fa-handshake", color: "border-green-400" },
+            { title: "Tot Morgen", audioId: "audio-5", icon: "fa-clock", color: "border-orange-400" },
+            { title: "Dag!", audioId: "audio-6", icon: "fa-hand-peace", color: "border-red-400" },
+            { title: "Let's Pray", audioId: "audio-7", icon: "fa-hands-praying", color: "border-indigo-400" },
+            { title: "Heel Benieuwd", audioId: "audio-8", icon: "fa-eye", color: "border-teal-400" },
+            { title: "Holle Retoriek", audioId: "audio-9", icon: "fa-bullhorn", color: "border-gray-400" },
+            
+            // NIEUW FRAGMENT (11)
+            { title: "Dat vind ik dus erg", audioId: "audio-16", icon: "fa-face-frown", color: "border-rose-400" },
+
+            // Groep 1 vervolg (12-13)
+            { title: "Jonge Man", audioId: "audio-11", icon: "fa-baby", color: "border-lime-400" },
+            { title: "Werken voor je zetel", audioId: "audio-12", icon: "fa-chair", color: "border-sky-400" },
+            
+            // Groep 2: De Hugo Rijtsma Fragmenten (14-17)
+            { title: "Rus in de keuken", audioId: "audio-13", icon: "fa-gavel", color: "border-cyan-400" },
+            { title: "Weekend", audioId: "audio-14", icon: "fa-glasses", color: "border-amber-400" },
+            { title: "Kannibalisme", audioId: "audio-10", icon: "fa-user-tie", color: "border-fuchsia-400" },
+            { title: "Zijn we klaar?", audioId: "audio-15", icon: "fa-scroll", color: "border-emerald-400" }
+        ];
+
+        let currentAudio = null;
+        let currentButton = null;
+        const grid = document.getElementById('soundGrid');
+
+        // Maak de knoppen aan en koppel ze aan de audio ID's
+        function createButtons() {
+            // Zorg ervoor dat de grid leeg is voordat we de knoppen opnieuw maken
+            grid.innerHTML = ''; 
+            
+            soundData.forEach((sound) => {
+                const btn = document.createElement('button');
+                // Aangepaste klassen voor het donkere thema: bg-gray-800 in de CSS style tag
+                btn.className = `sound-card group relative w-full border-b-4 ${sound.color} text-left p-4 rounded-xl shadow-md flex items-center justify-between`;
+                
+                // Koppel de klik direct aan de audio ID
+                btn.onclick = () => {
+                    const audioElement = document.getElementById(sound.audioId);
+                    if (audioElement) {
+                        playSound(audioElement, btn);
+                    } else {
+                        console.error(`Audio element niet gevonden: ${sound.audioId}`);
+                    }
+                };
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 z-10">
+                        <!-- Icon achtergrond past bij het donkere thema -->
+                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center group-hover:bg-gray-800 transition">
+                            <i class="fas ${sound.icon} text-lg text-gray-200 group-hover:text-white"></i>
+                        </div>
+                        <span class="font-semibold text-lg leading-tight">${sound.title}</span>
+                    </div>
+                    <div class="z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-play text-white"></i>
+                    </div>
+                    <div class="wave"></div>
+                `;
+
+                grid.appendChild(btn);
+            });
+        }
+        
+        // De afspeelfunctie, nu geoptimaliseerd met Promise-handling
+        function playSound(audioElement, buttonElement) {
+            // 1. CONTROLEREN & STOPPEN (Toggle OFF)
+            if (currentAudio === audioElement && !audioElement.paused) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+                buttonElement.classList.remove('playing');
+                currentAudio = null;
+                currentButton = null;
+                return; 
+            }
+
+            // 2. OPRUIMEN: Stop andere eventueel spelende fragmenten
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                if (currentButton) {
+                    currentButton.classList.remove('playing');
+                }
+            }
+
+            // 3. STARTEN: Reset tijd en start het geselecteerde fragment
+            audioElement.currentTime = 0; 
+            
+            const playPromise = audioElement.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Automatic playback started!
+                    // Stel de 'playing' status in en update de globale variabelen
+                    buttonElement.classList.add('playing');
+                    currentAudio = audioElement;
+                    currentButton = buttonElement;
+                })
+                .catch(e => {
+                    // Autoplay was prevented of een andere fout trad op
+                    console.error("Audio afspelen mislukt. Controleer Autoplay Policy en bestandsformaat:", e);
+                    buttonElement.classList.remove('playing');
+                    // Zorg ervoor dat de globale status schoon is
+                    currentAudio = null;
+                    currentButton = null;
+                });
+            } else {
+                 // Fallback voor zeer oude browsers (geen Promise)
+                buttonElement.classList.add('playing');
+                currentAudio = audioElement;
+                currentButton = buttonElement;
+            }
+
+            audioElement.onended = () => {
+                buttonElement.classList.remove('playing');
+                // Alleen resetten als dit het audio-element is dat eindigde
+                if (currentAudio === audioElement) {
+                    currentAudio = null;
+                    currentButton = null;
+                }
+            };
+        }
+
+        // Functie om alles te stoppen
+        function stopAllSounds() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            // Alle knoppen de 'playing' state afnemen
+            document.querySelectorAll('.playing').forEach(btn => btn.classList.remove('playing'));
+
+            currentAudio = null;
+            currentButton = null;
+        }
+
+        // Start de knoppen-creatie zodra het DOM klaar is
+        document.addEventListener('DOMContentLoaded', createButtons);
+    </script>
+</body>
+</html>

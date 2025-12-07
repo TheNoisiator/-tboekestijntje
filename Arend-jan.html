@@ -353,8 +353,55 @@
             currentButton = null;
         }
 
-        // Start de knoppen-creatie zodra het DOM klaar is
-        document.addEventListener('DOMContentLoaded', createButtons);
+        // NIEUWE FUNCTIE: Speelt 'Dag!' af bij het laden van de pagina
+        function playOnLoad() {
+            // Zoek de index van het 'Dag!' fragment in de soundData array
+            const soundDataIndex = soundData.findIndex(sound => sound.audioId === 'audio-6');
+
+            if (soundDataIndex === -1) {
+                console.error("Audio-ID 'audio-6' (Dag!) niet gevonden in soundData.");
+                return;
+            }
+            
+            const audioElement = document.getElementById('audio-6');
+            // De knoppen zijn in de grid toegevoegd in dezelfde volgorde als soundData
+            const buttonElement = grid.children[soundDataIndex];
+            
+            if (audioElement && buttonElement) {
+                audioElement.currentTime = 0;
+                
+                const playPromise = audioElement.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        // Afspelen gelukt
+                        buttonElement.classList.add('playing');
+                        currentAudio = audioElement;
+                        currentButton = buttonElement;
+                    })
+                    .catch(error => {
+                        // Autoplay geblokkeerd.
+                        console.warn("Automatisch afspelen van 'Dag!' is geblokkeerd door de browser. Klik op de knop om af te spelen.");
+                        // Optioneel: toon hier een visuele indicatie dat de gebruiker moet klikken
+                    });
+                }
+                
+                // Zorg ervoor dat de state wordt gereset na afloop
+                audioElement.onended = () => {
+                    buttonElement.classList.remove('playing');
+                    if (currentAudio === audioElement) {
+                        currentAudio = null;
+                        currentButton = null;
+                    }
+                };
+            }
+        }
+
+        // Start de knoppen-creatie zodra het DOM klaar is, en probeer dan af te spelen
+        document.addEventListener('DOMContentLoaded', () => {
+            createButtons();
+            playOnLoad(); // Probeer direct af te spelen
+        });
     </script>
 </body>
 </html>

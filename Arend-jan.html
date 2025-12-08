@@ -10,10 +10,49 @@
         /* --- STIJL GEBASEERD OP FOTO ACHTERGROND (Donker & Elegant) --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* ACHTERGROND STIJL VERPLAATST NAAR #fixed-background HIERONDER */
-            background-color: #000; /* Fallback kleur */
+            background-color: #000;
             min-height: 100vh;
             position: relative; 
+            /* Toepassen van de onscherpte op de inhoud (deze wordt verwijderd na klik op splash) */
+            transition: filter 0.8s ease-out; 
+            filter: blur(0px);
+        }
+
+        /* Verwijder de onscherpte als de pagina actief is */
+        body.active {
+            filter: blur(0);
+        }
+        
+        /* NIEUW: Splash Screen Container */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* Zorg dat het boven alles ligt */
+            cursor: pointer;
+            /* Animatie transities voor het verdwijnen */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        #splash-screen.hidden-out {
+            opacity: 0;
+            transform: scale(1.1); /* Subtiel zoom-effect bij verdwijnen */
+            pointer-events: none; /* Maakt de onderliggende elementen klikbaar */
+        }
+        
+        #splash-image {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 9999px; /* Volledig rond */
+            /* Zorgt voor soepele overgangen van transformaties (zoals rotate en scale) */
+            transition: transform 0.3s ease-out; 
         }
 
         /* NIEUW: Vaste laag voor de achtergrondafbeelding om scrollen op mobiel te voorkomen */
@@ -25,15 +64,13 @@
             height: 100%;
             background-image: url('https://od.lk/s/MjJfMzUyMTgyNTJf/arend-jan.jpg');
             background-size: cover;
-            /* Standaard (Desktop): De achtergrond 25% van links en 50% van boven positioneren */
             background-position: 25% 50%; 
-            z-index: -2; /* Plaats achter de overlay (die is -1) */
+            z-index: -2; 
         }
         
         /* RESPONSIVITEIT: Optimaliseer de achtergrondpositie voor mobiel */
         @media (max-width: 640px) {
             #fixed-background {
-                /* Op mobiel verschuiven we de afbeelding iets naar rechts om het gezicht te centreren in de smalle viewport */
                 background-position: 35% 50%; 
             }
         }
@@ -46,7 +83,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Donkerblauwe/zwarte overlay */
             background: rgba(0, 0, 0, 0.7); 
             z-index: -1;
         }
@@ -55,13 +91,11 @@
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
-            /* Donkere, semi-transparante knoppen die bij de achtergrond passen */
-            background-color: rgba(31, 41, 55, 0.7); /* Tailwind gray-800 met 70% opacity */
-            backdrop-filter: blur(5px); /* Een subtiel blur-effect */
+            background-color: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(5px);
         }
 
         .sound-card:hover {
-            /* Meer uitgesproken hover-effect */
             transform: translateY(-5px);
             box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.6); 
         }
@@ -71,16 +105,13 @@
         }
 
         .playing {
-            /* Elegante goud/amber kleur voor 'speelt' status */
-            border-color: #f59e0b !important; /* Amber-500 */
-            background-color: rgba(55, 65, 81, 0.9) !important; /* Gray-700 met hogere opaciteit */
+            border-color: #f59e0b !important; 
+            background-color: rgba(55, 65, 81, 0.9) !important; 
             color: white !important;
-            /* Goudkleurige gloed */
             box-shadow: 0 0 20px rgba(253, 230, 138, 0.8); 
         }
 
         .playing i {
-            /* Sterkere pulsatie */
             animation: pulse 0.8s infinite;
         }
 
@@ -112,17 +143,26 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #1f2937; /* Donkergrijs */
+            background: #1f2937;
         }
         ::-webkit-scrollbar-thumb {
-            background: #f59e0b; /* Amber */
+            background: #f59e0b;
             border-radius: 4px;
         }
     </style>
 </head>
 <body class="text-white">
 
-    <!-- NIEUW: Vaste Achtergrond Container -->
+    <!-- NIEUW: Splash Screen -->
+    <div id="splash-screen">
+        <!-- hover:scale-110 voor meer zoom, hover:rotate-3 voor een lichte rotatie -->
+        <img id="splash-image" src="https://od.lk/s/MjJfMzUyMTk2MThf/hoofd.png" alt="Arend-Jan Boekestijn's hoofd" class="w-64 h-auto transition duration-500 ease-in-out transform hover:scale-110 hover:rotate-3" onclick="handleClick()">
+        <p class="text-xl md:text-2xl text-amber-300 font-semibold mt-8 text-center px-4">
+           
+        </p>
+    </div>
+
+    <!-- Vaste Achtergrond Container -->
     <div id="fixed-background"></div>
 
     <div class="container mx-auto px-4 py-8 max-w-5xl">
@@ -216,9 +256,9 @@
             <!-- Buttons generated by JS -->
         </div>
 
-        <!-- NIEUW: Hugo Sectie Header -->
-        <h2 class="text-3xl font-bold mt-12 mb-6 text-amber-500 border-b border-amber-500 pb-2">
-            <i class="fas fa-hat-cowboy text-2xl mr-3"></i> BONUS AUDIO: De Hugo Rijtsma Collectie
+        <!-- AANGEPAST: Kleinere tekst voor de Bonus Audio header -->
+        <h2 class="text-2xl sm:text-3xl font-bold mt-12 mb-6 text-amber-500 border-b border-amber-500 pb-2">
+            <i class="fas fa-hat-cowboy text-xl mr-3"></i> BONUS AUDIO: De Hugo Rijtsma Collectie
         </h2>
 
         <!-- Hugo Grid (Automatisch Gevuld) -->
@@ -232,18 +272,7 @@
         </div>
     </div>
     
-    <!-- Autoplay Geblokkeerd Melding (Standaard Verborgen) -->
-    <div id="autoplayWarning" class="fixed bottom-0 left-0 right-0 p-4 bg-gray-900 border-t border-amber-500 shadow-2xl transition-all duration-300 opacity-0 transform translate-y-full" style="display: none;">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <p class="text-sm text-gray-200 flex items-center gap-2">
-                <i class="fas fa-exclamation-triangle text-amber-500"></i>
-                Automatisch afspelen geblokkeerd. Klik hier om Arend-Jan te laten groeten!
-            </p>
-            <button id="playWarningButton" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-1 px-3 rounded text-sm transition" onclick="playBlockedSound()">
-                <i class="fas fa-volume-up"></i> Dag!
-            </button>
-        </div>
-    </div>
+    <!-- Oude autoplay waarschuwing is nu verwijderd -->
 
     <script>
         // Mapping van de knopdata, nu met een 'group' property om de plaatsing te bepalen
@@ -276,15 +305,15 @@
         let currentButton = null;
         const mainGrid = document.getElementById('soundGrid');
         const bonusGrid = document.getElementById('bonusSoundGrid');
-        const warningBanner = document.getElementById('autoplayWarning');
-        let dagButtonElement = null; // Opslaan van de "Dag!" knop voor de waarschuwing
+        const splashScreen = document.getElementById('splash-screen');
+        const body = document.body;
 
         // Maak de knoppen aan en koppel ze aan de audio ID's
         function createButtons() {
             mainGrid.innerHTML = ''; 
-            bonusGrid.innerHTML = ''; // Maak ook het nieuwe bonus grid leeg
+            bonusGrid.innerHTML = '';
             
-            soundData.forEach((sound, index) => {
+            soundData.forEach((sound) => {
                 const btn = document.createElement('button');
                 btn.className = `sound-card group relative w-full border-b-4 ${sound.color} text-left p-4 rounded-xl shadow-md flex items-center justify-between`;
                 
@@ -292,8 +321,6 @@
                     const audioElement = document.getElementById(sound.audioId);
                     if (audioElement) {
                         playSound(audioElement, btn);
-                        // Verberg de waarschuwing als de gebruiker een fragment afspeelt
-                        hideWarning(); 
                     } else {
                         console.error(`Audio element niet gevonden: ${sound.audioId}`);
                     }
@@ -313,14 +340,9 @@
                     <div class="wave"></div>
                 `;
 
-                // Nieuwe logica om te bepalen in welk grid de knop moet komen
+                // Logica om te bepalen in welk grid de knop moet komen
                 const targetGrid = sound.group === 'hugo' ? bonusGrid : mainGrid;
                 targetGrid.appendChild(btn);
-                
-                // Sla een referentie op naar de "Dag!" knop
-                if (sound.audioId === 'audio-6') {
-                    dagButtonElement = btn;
-                }
             });
         }
         
@@ -352,8 +374,8 @@
                     currentButton = buttonElement;
                 })
                 .catch(e => {
-                    // Autoplay prevention - dit is de logica die de browser triggert bij laden
-                    console.error("Audio afspelen mislukt, mogelijk door Autoplay Policy:", e);
+                    // Autoplay prevention - dit zou nu niet meer moeten gebeuren na de klik op de splash screen
+                    console.error("Audio afspelen mislukt na initiële klik:", e);
                     buttonElement.classList.remove('playing');
                     currentAudio = null;
                     currentButton = null;
@@ -383,25 +405,28 @@
             }
         }
 
-        // NIEUWE FUNCTIE: Speelt 'Dag!' af bij het laden van de pagina
-        function playOnLoad() {
+        // NIEUWE FUNCTIE: Speelt 'Dag!' af nadat de gebruiker op de splash screen heeft geklikt
+        function playOnLoadAfterClick() {
             const audioElement = document.getElementById('audio-6');
+            const dagButtonElement = Array.from(mainGrid.children).find(btn => 
+                btn.innerHTML.includes('Dag!')
+            );
             
             if (audioElement && dagButtonElement) {
                 audioElement.currentTime = 0;
                 
+                // Probeer af te spelen. Dit zou nu moeten werken dankzij de user-interactie.
                 const playPromise = audioElement.play();
                 
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {
-                        // Afspelen gelukt (zeldzaam op moderne browsers zonder user interactie)
                         dagButtonElement.classList.add('playing');
                         currentAudio = audioElement;
                         currentButton = dagButtonElement;
                     })
                     .catch(error => {
-                        // Autoplay geblokkeerd. Toon de melding.
-                        showWarning();
+                        console.error("Initiële groet mislukt na klik:", error);
+                        // Foutafhandeling mocht het alsnog fout gaan
                     });
                 }
                 
@@ -415,44 +440,31 @@
                 };
             }
         }
-
-        // --- Waarschuwing Banner Functies ---
-
-        function showWarning() {
-            warningBanner.style.display = 'flex';
-            // Forceer een reflow om de transitie te triggeren
-            setTimeout(() => {
-                warningBanner.style.opacity = '1';
-                warningBanner.style.transform = 'translateY(0)';
-            }, 10); 
-        }
-
-        function hideWarning() {
-            warningBanner.style.opacity = '0';
-            warningBanner.style.transform = 'translateY(100%)';
-            setTimeout(() => {
-                warningBanner.style.display = 'none';
-            }, 300); // Wacht op de transitie
-        }
-
-        // Speelt het geblokkeerde geluid af via de knop op de waarschuwing
-        function playBlockedSound() {
-            // Verberg de waarschuwing direct
-            hideWarning(); 
-            // Speel het fragment af alsof de gebruiker op de knop klikte
-            if (dagButtonElement) {
-                const audioElement = document.getElementById('audio-6');
-                playSound(audioElement, dagButtonElement);
-            }
-        }
         
-        // Zorg ervoor dat deze functie globaal beschikbaar is voor de HTML-knop
-        window.playBlockedSound = playBlockedSound; 
+        // NIEUWE FUNCTIE: Afhandeling van de klik op de splash screen
+        function handleClick() {
+            // 1. Haal de blur van de body af
+            body.classList.add('active');
+            
+            // 2. Start de animatie van de splash screen
+            splashScreen.classList.add('hidden-out');
+            
+            // 3. Wacht tot de animatie klaar is en verwijder de splash screen
+            setTimeout(() => {
+                splashScreen.remove();
+            }, 800); // Wacht op de 0.8s transitie
+            
+            // 4. Start de initiële audio (Dag!)
+            playOnLoadAfterClick();
+        }
+
+        // Maak handleClick globaal beschikbaar zodat deze vanuit de HTML kan worden aangeroepen
+        window.handleClick = handleClick; 
         
-        // Start de knoppen-creatie zodra het DOM klaar is, en probeer dan af te spelen
+        // Start de knoppen-creatie zodra het DOM klaar is
         document.addEventListener('DOMContentLoaded', () => {
             createButtons();
-            playOnLoad(); // Probeer direct af te spelen (wordt waarschijnlijk geblokkeerd)
+            // Er wordt NIET automatisch afgespeeld, dat gebeurt pas na de klik op de splash screen
         });
     </script>
 </body>

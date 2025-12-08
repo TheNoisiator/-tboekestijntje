@@ -23,7 +23,7 @@
             filter: blur(0);
         }
         
-        /* NIEUW: Splash Screen Container */
+        /* Splash Screen Container */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -35,27 +35,26 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999; /* Zorg dat het boven alles ligt */
+            z-index: 9999; 
             cursor: pointer;
-            /* Animatie transities voor het verdwijnen */
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
 
         #splash-screen.hidden-out {
             opacity: 0;
-            transform: scale(1.1); /* Subtiel zoom-effect bij verdwijnen */
-            pointer-events: none; /* Maakt de onderliggende elementen klikbaar */
+            transform: scale(1.1); 
+            pointer-events: none; 
         }
         
         #splash-image {
             max-width: 90%;
             max-height: 90vh;
-            border-radius: 9999px; /* Volledig rond */
+            border-radius: 9999px; 
             /* Zorgt voor soepele overgangen van transformaties (zoals rotate en scale) */
             transition: transform 0.3s ease-out; 
         }
 
-        /* NIEUW: Vaste laag voor de achtergrondafbeelding om scrollen op mobiel te voorkomen */
+        /* Vaste laag voor de achtergrondafbeelding om scrollen op mobiel te voorkomen */
         #fixed-background {
             position: fixed;
             top: 0;
@@ -64,6 +63,7 @@
             height: 100%;
             background-image: url('https://od.lk/s/MjJfMzUyMTgyNTJf/arend-jan.jpg');
             background-size: cover;
+            /* Optimaliseer de positie om Arend-Jan beter in beeld te brengen */
             background-position: 25% 50%; 
             z-index: -2; 
         }
@@ -83,7 +83,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7); 
+            /* AANGEPAST: Minder donkere overlay (0.5 in plaats van 0.7) */
+            background: rgba(0, 0, 0, 0.5); 
             z-index: -1;
         }
         
@@ -91,6 +92,7 @@
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
+            /* Kaarten zijn halfdoorzichtig, wat contrasteert met de achtergrond */
             background-color: rgba(31, 41, 55, 0.7);
             backdrop-filter: blur(5px);
         }
@@ -153,9 +155,9 @@
 </head>
 <body class="text-white">
 
-    <!-- NIEUW: Splash Screen -->
+    <!-- Splash Screen (Verdwijnt na klik) -->
     <div id="splash-screen">
-        <!-- hover:scale-110 voor meer zoom, hover:rotate-3 voor een lichte rotatie -->
+        <!-- Interactieve animatie blijft behouden -->
         <img id="splash-image" src="https://od.lk/s/MjJfMzUyMTk2MThf/hoofd.png" alt="Arend-Jan Boekestijn's hoofd" class="w-64 h-auto transition duration-500 ease-in-out transform hover:scale-110 hover:rotate-3" onclick="handleClick()">
         <p class="text-xl md:text-2xl text-amber-300 font-semibold mt-8 text-center px-4">
            
@@ -272,8 +274,6 @@
         </div>
     </div>
     
-    <!-- Oude autoplay waarschuwing is nu verwijderd -->
-
     <script>
         // Mapping van de knopdata, nu met een 'group' property om de plaatsing te bepalen
         const soundData = [
